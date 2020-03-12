@@ -1,32 +1,37 @@
-import path from 'path'
-import fs from 'fs'
-import which from 'which'
+import fs from "fs";
+import path from "path";
+
+import which from "which";
 
 function exists(file: string): boolean {
-  return fs.existsSync(file)
+  return fs.existsSync(file);
 }
 
 export async function findEslint(rootPath: string): Promise<string> {
-  const platform = process.platform
+  const { platform } = process;
   if (
-    platform === 'win32' &&
-    (exists(path.join(rootPath, 'node_modules', '.bin', 'eslint.cmd')))
+    platform === "win32" &&
+    exists(path.join(rootPath, "node_modules", ".bin", `patched.cmd`))
   ) {
-    return path.join('.', 'node_modules', '.bin', 'eslint.cmd')
-  } else if (
-    (platform === 'linux' || platform === 'darwin') &&
-    (exists(path.join(rootPath, 'node_modules', '.bin', 'eslint')))
+    return path.join(".", "node_modules", ".bin", "patched.cmd");
+  }
+  if (
+    (platform === "linux" || platform === "darwin") &&
+    exists(path.join(rootPath, "node_modules", ".bin", "patched"))
   ) {
-    return path.join('.', 'node_modules', '.bin', 'eslint')
-  } else if (
-    exists(path.join(rootPath, '.vscode', 'pnpify', 'eslint', 'bin', 'eslint.js'))
+    return path.join(".", "node_modules", ".bin", "patched");
+  }
+  if (
+    exists(
+      path.join(rootPath, ".vscode", "pnpify", "patched", "bin", "patched.js")
+    )
   ) {
-    return path.join('.', '.vscode', 'pnpify', 'eslint', 'bin', 'eslint.js')
-  } else {
-    try {
-      return which.sync('eslint')
-    } catch (e) {
-      return ''
-    }
+    return path.join(".", ".vscode", "pnpify", "patched", "bin", "patched.js");
+  }
+  try {
+    return which.sync("patched");
+  }
+  catch (error) {
+    return "";
   }
 }
